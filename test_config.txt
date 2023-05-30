@@ -1,0 +1,64 @@
+
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+stream {
+   log_format proxy '$remote_addr [$time_local] '
+                 '$protocol $status $bytes_sent $bytes_received '
+                 '$session_time "$upstream_addr" '
+                 '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"';
+  upstream outbound {
+    server [2a01:4f8:c012:b92e::1]:80;
+  }
+
+server {
+    listen  127.0.0.1:1030;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56f:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1031;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56e:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1032;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56d:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1033;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56c:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1034;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56b:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1035;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56a:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+server {
+    listen  127.0.0.1:1036;
+    proxy_pass outbound;
+    proxy_bind 2a05:9a00:1001:2:250:56ff:fe88:96c3;
+    access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
+    }
+}
