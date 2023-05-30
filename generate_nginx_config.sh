@@ -15,28 +15,29 @@ template_content=$(<nginx_sourc_template.conf)
 # Replace placeholders with variable values
 template_config=${template_content/__DEST_IP__/$DEST_IP}
 template_config=${template_config/__DEST_PORT__/$DEST_PORT}
-
+LISTEN1=$LISTEN
 SERVER_BLOK=$( while read line; do
  cat <<EOF
 server {
-    listen  127.0.0.1:$LISTEN;
+    listen  127.0.0.1:$LISTEN1;
     proxy_pass outbound;
     proxy_bind $line;
     access_log /var/log/nginx/access.log proxy flush=5m buffer=64;
     }
 EOF
-LISTEN=$(expr $LISTEN + 1)
+LISTEN1=$(expr $LISTEN1 + 1)
 done < "$IP6_FP" 
 )
 template_config=${template_config/__SERVER_BLOK__/$SERVER_BLOK}
-echo "$template_config" > $PWD/test_sourc_dist.conf
+echo "$template_config" > $PWD/sourc_dist/nginx.conf
 # Read the NGINX Multi destination template file
 template_content=$(<nginx_dest_template.conf)
-IP6_NU=$(wc -l < "$IP6_FP")
-# generate Upstream server
-SERVER_LIS=$( for ((i = $LISTEN; i <= IP6_NU; i++)); do
-    echo "server 127.0.0.1:$i;"
-done
+SERVER_LIS=$( while read line; do
+ cat <<EOF
+     server  127.0.0.1:$LISTEN;
+EOF
+ LISTEN=$(expr $LISTEN + 1)
+done < "$IP6_FP"
 )
 template_config=${template_content/__SERVER_LIS__/$SERVER_LIS}
-echo "$template_config" > $PWD/test_dest_dist.conf
+echo "$template_config" > $PWD/dest_dist/nginx.conf
